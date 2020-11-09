@@ -1,6 +1,23 @@
-<div class="card">
-    <div class="card-header p-2">
-        Hello
+<fieldset *ngIf="song" [disabled]="song!.busy">
+    <div class="card">
+        <div class="card-header p-2">
+            Hello
+        </div>
+        <div class="card-footer p-2">
+            <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-primary" (click)="song!.play(1)" *ngIf="!song!.playing">
+                    <i class="fa fa-fw fa-play"></i>
+                </button>
+                <button type="button" class="btn btn-primary" (click)="song!.pause(1)" *ngIf="song!.playing">
+                    <i class="fa fa-fw fa-pause"></i>
+                </button>
+                <button type="button" class="btn btn-primary" (click)="song!.next(1, 2)">
+                    <i class="fa fa-fw fa-forward"></i>
+                </button>
+            </div>
+        </div>
     </div>
-</div>
-<pre>{{song | json}}</pre>
+    <pre>{{song!.section | json}}</pre>
+    <pre>{{song!.measure | json}}</pre>
+    <pre>{{song!.beat | number}}</pre>
+</fieldset>
