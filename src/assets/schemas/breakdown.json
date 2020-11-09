@@ -1,0 +1,153 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+        "IGroup": {
+            "additionalProperties": {
+                "items": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ITrack"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "type": "array"
+            },
+            "title": "IGroup",
+            "type": "object"
+        },
+        "IMeasure": {
+            "additionalProperties": false,
+            "properties": {
+                "framework": {
+                    "title": "framework",
+                    "type": "string"
+                },
+                "length": {
+                    "title": "length",
+                    "type": "number"
+                },
+                "warning": {
+                    "title": "warning",
+                    "type": "boolean"
+                }
+            },
+            "title": "IMeasure",
+            "type": "object"
+        },
+        "ISection": {
+            "additionalProperties": false,
+            "properties": {
+                "description": {
+                    "title": "description",
+                    "type": "string"
+                },
+                "framework": {
+                    "title": "framework",
+                    "type": "string"
+                },
+                "measures": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/definitions/IMeasure"
+                                    },
+                                    {
+                                        "type": [
+                                            "string",
+                                            "number"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "title": "measures"
+                }
+            },
+            "required": [
+                "description",
+                "measures"
+            ],
+            "title": "ISection",
+            "type": "object"
+        },
+        "ITrack": {
+            "additionalProperties": false,
+            "properties": {
+                "description": {
+                    "title": "description",
+                    "type": "string"
+                },
+                "filename": {
+                    "title": "filename",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "description",
+                "filename"
+            ],
+            "title": "ITrack",
+            "type": "object"
+        }
+    },
+    "properties": {
+        "$schema": {
+            "enum": [
+                "../../schemas/breakdown.json"
+            ],
+            "title": "$schema",
+            "type": "string"
+        },
+        "beatsPerMeasure": {
+            "title": "beatsPerMeasure",
+            "type": "number"
+        },
+        "sections": {
+            "items": {
+                "$ref": "#/definitions/ISection"
+            },
+            "title": "sections",
+            "type": "array"
+        },
+        "startOffset": {
+            "title": "startOffset",
+            "type": "number"
+        },
+        "tracks": {
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/ITrack"
+                    },
+                    {
+                        "$ref": "#/definitions/IGroup"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "title": "tracks",
+            "type": "array"
+        }
+    },
+    "required": [
+        "$schema",
+        "beatsPerMeasure",
+        "sections",
+        "tracks"
+    ],
+    "type": "object"
+}
+

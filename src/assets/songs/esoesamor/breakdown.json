@@ -1,0 +1,69 @@
+{
+  "$schema": "../../schemas/breakdown.json",
+  "startOffset": 1.8,
+  "beatsPerMeasure": 8,
+  "tracks": [
+    "Vocals",
+    {
+      "Percussion": ["Bongo", {
+        "description": "Guïra",
+        "filename": "guira.mp3"
+      }]
+    },
+    {
+      "Guitars": ["Requinto", "Segunda", "Bass"]
+    }
+  ],
+  "sections": [{
+      "description": "Intro",
+      "measures": [0, 0, 4]
+    },
+    {
+      "description": "Verse",
+      "framework": "Derecho",
+      "measures": [0, 0, 0, 0, -1, 0, 0, 0, -1]
+    },
+    {
+      "description": "Bridge",
+      "measures": [-1, -1, 4]
+    },
+    {
+      "description": "Chorus",
+      "measures": ["Majao", 0, "Derecho", -1, "Majao", 0, "Derecho", -1]
+    },
+    {
+      "description": "Verse",
+      "framework": "Derecho",
+      "measures": [0, 0, 0, 0, -1, 0, 0, 0, -1]
+    },
+    {
+      "description": "Bridge",
+      "measures": [-1, -1, 4]
+    },
+    {
+      "description": "Chorus",
+      "measures": ["Majao", 0, "Derecho", -1, "Majao", 0, "Derecho", -1]
+    },
+    {
+      "description": "Mambo",
+      "measures": [{
+        "framework": "Derecho"
+      }, 4, 0, -1, {
+        "framework": "Majao"
+      }, 0, 4, 0, 0, 4]
+    },
+    {
+      "description": "Verse",
+      "framework": "Derecho",
+      "measures": [0, 0, 0, 0, 4]
+    },
+    {
+      "description": "Chorus",
+      "measures": ["Majao", 0, "Derecho", -1, "Majao", 0, "Derecho", 4]
+    },
+    {
+      "description": "Outro",
+      "measures": [-1, 4]
+    }
+  ]
+}
