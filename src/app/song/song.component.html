@@ -5,6 +5,9 @@
         </div>
         <div class="card-footer p-2">
             <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-primary" (click)="song!.previous(1, 2)">
+                    <i class="fa fa-fw fa-backward"></i>
+                </button>
                 <button type="button" class="btn btn-primary" (click)="song!.play(1)" *ngIf="!song!.playing">
                     <i class="fa fa-fw fa-play"></i>
                 </button>

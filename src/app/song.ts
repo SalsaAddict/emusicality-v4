@@ -31,6 +31,7 @@ export class Song extends ISong implements ISong, IRange {
         this.tracks = Tracks.load(this.player, iBreakdown.tracks);
         this.endIndex = startIndex.startIndex - 1;
         this.length = this.endIndex - this.startIndex + 1;
+        this.player.clock.synchronize();
     }
     private readonly player: Player;
     readonly sections: Section[];
@@ -45,23 +46,37 @@ export class Song extends ISong implements ISong, IRange {
     private _beat?: number;
     get beat() { return this._beat; }
     private synchronize = (beats: number) => {
-        if (!inRange(beats, this._section)) {
-            delete this._measure; delete this._section;
-            for (let i = 0; i < this.sections.length; i++)
-                if (inRange(beats, this.sections[i])) {
-                    this._section = this.sections[i];
-                    break;
-                }
+        if (inRange(beats, this)) {
+            if (!inRange(beats, this._section)) {
+                delete this._measure; delete this._section;
+                for (let i = 0; i < this.sections.length; i++)
+                    if (inRange(beats, this.sections[i])) {
+                        this._section = this.sections[i];
+                        break;
+                    }
+            }
+            if (this._section && !inRange(beats, this._measure)) {
+                delete this._measure;
+                for (let i = 0; i < this._section!.measures.length; i++)
+                    if (inRange(beats, this._section!.measures[i])) {
+                        this._measure = this._section!.measures[i];
+                        break;
+                    }
+            }
+            this._beat = this._measure ? beats - this._measure!.startIndex + 1 : undefined;
         }
-        if (this._section && !inRange(beats, this._measure)) {
-            delete this._measure;
-            for (let i = 0; i < this._section!.measures.length; i++)
-                if (inRange(beats, this._section!.measures[i])) {
-                    this._measure = this._section!.measures[i];
-                    break;
-                }
+        else {
+            if (beats < this.startIndex) {
+                this._section = this.sections[0];
+                this._measure = this.section!.measures[0];
+            }
+            else {
+                this._section = this.sections[this.sections.length - 1];
+                this._measure = this.section!.measures[this.section!.measures.length - 1];
+            }
+            this._beat = undefined;
         }
-        this._beat = this._measure ? beats - this._measure!.startIndex + 1 : undefined;
+        console.log("emu:song:synchronize", beats, this._section, this._measure, this._beat);
     }
     get busy() { return this.player.busy; }
     get playing() { return this.player.playing; }
@@ -78,20 +93,28 @@ export class Song extends ISong implements ISong, IRange {
         this.player.clock.stop();
         await this.player.suspend();
     }
-    async next(fadeOutBeats: number, fadeInBeats: number) {
+    private async goToBeat(beat: number, fadeOutBeats: number, fadeInBeats: number) {
+        if (this.playing) {
+            await this.player.mute(fadeOutBeats);
+            this.player.clock.goToBeat(beat, -fadeInBeats);
+            await this.player.seek();
+            await this.player.unmute(fadeInBeats);
+        }
+        else this.player.clock.goToBeat(beat, 0);
+    }
+    async previous(fadeOutBeats: number, fadeInBeats: number) {
+        if (this.section!.startIndex === 1) return;
         let startIndex: number;
-        if (this.section) {
-            if (this.section.endIndex === this.endIndex) return;
-            startIndex = this.section!.startIndex + this.section!.length;
+        if (inRange(this.player.clock.beats, this.section!.measures[0])) {
+            let index = this.sections.indexOf(this.section!);
+            startIndex = this.sections[index - 1].startIndex;
         }
-        else {
-            startIndex = 1;
-            fadeInBeats = 0;
-        }
-        this.synchronize(startIndex);
-        await this.player.mute(fadeOutBeats);
-        this.player.clock.goToBeat(startIndex, -fadeInBeats);
-        await this.player.seek();
-        await this.player.unmute(fadeInBeats);
+        else startIndex = this.section!.startIndex;
+        this.goToBeat(startIndex, fadeOutBeats, fadeInBeats);
+    }
+    async next(fadeOutBeats: number, fadeInBeats: number) {
+        if (this.section!.endIndex === this.endIndex) return;
+        let startIndex = this.section!.startIndex + this.section!.length;
+        this.goToBeat(startIndex, fadeOutBeats, fadeInBeats);
     }
 }

@@ -4,10 +4,12 @@ export class Clock {
     constructor(
         private readonly audioContext: AudioContext,
         bpm: number,
-        private readonly startOffset: number,
-        private synchronize: ISynchronize) {
+        readonly startOffset: number,
+        synchronize: ISynchronize) {
         this._bpm = bpm;
+        this.synchronize = () => { synchronize(this.beats); };
     }
+    synchronize: Function;
     private _playbackRate: number = 1;
     get playbackRate() { return this._playbackRate; }
     private _bpm: number;
@@ -24,7 +26,8 @@ export class Clock {
     goToBeat(beats: number, offset: number = 0) {
         beats = beats + offset > 0 ? beats + offset : 0;
         this._seconds = beats > 0 ? beats * this.secondsPerBeat + this.startOffset : 0;
-        this.synchronize(beats);
+        this._beats = this.secondsToBeats(this._seconds);
+        this.synchronize();
     }
     private _frameHandle?: number;
     start(seconds = this.audioContext.currentTime) {
@@ -32,7 +35,7 @@ export class Clock {
             let elapsed = -seconds + (seconds = this.audioContext.currentTime);
             this._seconds += (elapsed * this._playbackRate);
             this._beats = this.secondsToBeats(this._seconds);
-            this.synchronize(this._beats);
+            this.synchronize();
             this.start(seconds);
         });
     }
