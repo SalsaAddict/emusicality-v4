@@ -3,14 +3,14 @@ import { IBreakdown, IRangeStart, IRange, inRange } from './ibreakdown';
 import { Sections } from './sections';
 import { Section } from './section';
 import { HttpClient } from '@angular/common/http';
-import { Player, setGain } from './player';
+import { Player } from './player';
 import { Tracks } from './tracks';
 import { Track } from './track';
 import { Measure } from './measure';
 
 export class Song extends ISong implements ISong, IRange {
     static load(http: HttpClient, songId: string) {
-        return new Promise<Song>((resolve, reject) => {
+        return new Promise<Song>((resolve) => {
             let path = "assets/songs/"
             http.get<ICatalog>(`${path}catalog.json`)
                 .subscribe((iCatalog) => {
@@ -22,6 +22,8 @@ export class Song extends ISong implements ISong, IRange {
                 });
         });
     }
+    static readonly fadeInBeats: number = 2;
+    static readonly fadeOutBeats: number = 1;
     constructor(iSong: ISong, iBreakdown: IBreakdown, readonly path: string) {
         super(iSong);
         let startIndex: IRangeStart = { startIndex: 1 }
@@ -76,33 +78,35 @@ export class Song extends ISong implements ISong, IRange {
             }
             this._beat = undefined;
         }
-        console.log("emu:song:synchronize", beats, this._section, this._measure, this._beat);
     }
     get busy() { return this.player.busy; }
     get playing() { return this.player.playing; }
-    async play(fadeinBeats: number = 0) {
+    async play() {
         if (this.player.playing) return;
         await this.player.resume();
         await this.player.seek();
         this.player.clock.start();
-        await this.player.play(fadeinBeats);
+        await this.player.play(Song.fadeInBeats);
     }
-    async pause(fadeOutBeats: number = 0) {
+    async pause() {
         if (!this.player.playing) return;
-        await this.player.pause(fadeOutBeats);
+        await this.player.pause(Song.fadeOutBeats);
         this.player.clock.stop();
         await this.player.suspend();
     }
-    private async goToBeat(beat: number, fadeOutBeats: number, fadeInBeats: number) {
+    private async goToBeat(beat: number) {
         if (this.playing) {
-            await this.player.mute(fadeOutBeats);
-            this.player.clock.goToBeat(beat, -fadeInBeats);
+            await this.player.mute(Song.fadeOutBeats);
+            this.player.clock.goToBeat(beat, -Song.fadeInBeats);
             await this.player.seek();
-            await this.player.unmute(fadeInBeats);
+            await this.player.unmute(Song.fadeInBeats);
         }
         else this.player.clock.goToBeat(beat, 0);
     }
-    async previous(fadeOutBeats: number, fadeInBeats: number) {
+    async restart() {
+        await this.goToBeat(0);
+    }
+    async previous() {
         if (this.section!.startIndex === 1) return;
         let startIndex: number;
         if (inRange(this.player.clock.beats, this.section!.measures[0])) {
@@ -110,11 +114,11 @@ export class Song extends ISong implements ISong, IRange {
             startIndex = this.sections[index - 1].startIndex;
         }
         else startIndex = this.section!.startIndex;
-        this.goToBeat(startIndex, fadeOutBeats, fadeInBeats);
+        await this.goToBeat(startIndex);
     }
-    async next(fadeOutBeats: number, fadeInBeats: number) {
+    async next() {
         if (this.section!.endIndex === this.endIndex) return;
         let startIndex = this.section!.startIndex + this.section!.length;
-        this.goToBeat(startIndex, fadeOutBeats, fadeInBeats);
+        await this.goToBeat(startIndex);
     }
 }

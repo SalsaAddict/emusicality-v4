@@ -109,9 +109,9 @@ export class Player {
         await setGain(this.masterGainNode, 0, fadeOutBeats * this.clock.secondsPerBeat);
         this._busyQueue.pop();
     }
-    async unmute(FadeInBeats: number) {
+    async unmute(fadeInBeats: number) {
         this._busyQueue.push(null);
-        await setGain(this.masterGainNode, 1, FadeInBeats * this.clock.secondsPerBeat);
+        await setGain(this.masterGainNode, 1, fadeInBeats * this.clock.secondsPerBeat);
         this._busyQueue.pop();
     }
 }

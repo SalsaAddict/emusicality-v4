@@ -1,26 +1,47 @@
-<fieldset *ngIf="song" [disabled]="song!.busy">
-    <div class="card">
-        <div class="card-header p-2">
-            Hello
-        </div>
-        <div class="card-footer p-2">
-            <div class="btn-group btn-group-sm">
-                <button type="button" class="btn btn-primary" (click)="song!.previous(1, 2)">
-                    <i class="fa fa-fw fa-backward"></i>
-                </button>
-                <button type="button" class="btn btn-primary" (click)="song!.play(1)" *ngIf="!song!.playing">
-                    <i class="fa fa-fw fa-play"></i>
-                </button>
-                <button type="button" class="btn btn-primary" (click)="song!.pause(1)" *ngIf="song!.playing">
-                    <i class="fa fa-fw fa-pause"></i>
-                </button>
-                <button type="button" class="btn btn-primary" (click)="song!.next(1, 2)">
-                    <i class="fa fa-fw fa-forward"></i>
-                </button>
+<div class="container-fluid">
+    <fieldset *ngIf="song" [disabled]="song!.busy">
+        <div class="card">
+            <div class="card-header p-2">
+                Hello
+            </div>
+            <div class="card-body p-2">
+                <div class="d-flex justify-content-around text-center initialism m-0">
+                    <div class="d-flex flex-column">
+                        <div class="text-muted small">Section</div>
+                        <div class="text-info font-weight-bold" [innerText]="song!.section!.description"></div>
+                    </div>
+                    <div class="d-flex flex-column" [ngSwitch]="!!song!.measure!.framework">
+                        <div class="text-muted small">Framework</div>
+                        <div *ngSwitchCase="true" class="text-info font-weight-bold"
+                            [innerText]="song!.measure!.framework">
+                        </div>
+                        <div *ngSwitchCase="false" class="text-muted font-weight-bold">&mdash;</div>
+                    </div>
+                </div>
+                <app-markers [measures]="song!.section!.measures" [measure]="song!.measure!" [beat]="song!.beat">
+                </app-markers>
+            </div>
+            <div class="card-footer p-2 fixed-bottom">
+                <div class="d-flex w-100 justify-content-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" (click)="song!.restart()">
+                            <i class="fa fa-fw fa-fast-backward"></i>
+                        </button>
+                        <button type="button" class="btn btn-primary" (click)="song!.previous()">
+                            <i class="fa fa-fw fa-backward"></i>
+                        </button>
+                        <button type="button" class="btn btn-primary" (click)="song!.play()" *ngIf="!song!.playing">
+                            <i class="fa fa-fw fa-play"></i>
+                        </button>
+                        <button type="button" class="btn btn-primary" (click)="song!.pause()" *ngIf="song!.playing">
+                            <i class="fa fa-fw fa-pause"></i>
+                        </button>
+                        <button type="button" class="btn btn-primary" (click)="song!.next()">
+                            <i class="fa fa-fw fa-forward"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <pre>{{song!.section | json}}</pre>
-    <pre>{{song!.measure | json}}</pre>
-    <pre>{{song!.beat | number}}</pre>
-</fieldset>
+    </fieldset>
+</div>

@@ -58,4 +58,4 @@ export function inRange(index: number, ...ranges: (IRange | undefined)[]): boole
     return result;
 }
 
-export type IContext = "primary" | "warning" | "danger";
+export type IContext = "info" | "warning" | "danger";

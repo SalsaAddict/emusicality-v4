@@ -34,8 +34,7 @@ export class Clock {
         this._frameHandle = requestAnimationFrame(() => {
             let elapsed = -seconds + (seconds = this.audioContext.currentTime);
             this._seconds += (elapsed * this._playbackRate);
-            this._beats = this.secondsToBeats(this._seconds);
-            this.synchronize();
+            if (this._beats !== (this._beats = this.secondsToBeats(this._seconds))) this.synchronize();
             this.start(seconds);
         });
     }

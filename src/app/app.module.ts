@@ -8,11 +8,13 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SongComponent } from './song/song.component';
+import { MarkersComponent } from './markers/markers.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SongComponent
+    SongComponent,
+    MarkersComponent
   ],
   imports: [
     BrowserModule,
